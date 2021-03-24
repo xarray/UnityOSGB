@@ -14,9 +14,10 @@ public class PagedData : MonoBehaviour
     public List<string> _fileNames = new List<string>();
     public List<Vector2> _ranges = new List<Vector2>();
     public List<GameObject> _pagedNodes = new List<GameObject>();
-
     string _fullPathPrefix = "";
-    float _scaleBase = (Mathf.PI * 0.1f) / (1920.0f * 1080.0f);
+
+    public string getFullFileName(int index)
+    { return _fullPathPrefix + _fileNames[index]; }
 
     void Start()
     {
@@ -70,25 +71,6 @@ public class PagedData : MonoBehaviour
         }
 
         // Update file loading/unloading status
-        foreach (int index in filesToLoad)
-        {
-            string fileName = _fullPathPrefix + _fileNames[index];
-            GameObject fineNode = _mainReader.LoadSceneFromFile(fileName);
-            if (fineNode != null)
-            {
-                fineNode.transform.SetParent(this.transform, false);
-                _pagedNodes[index] = fineNode;
-                _pagedNodes[0].SetActive(false);  // FIXME: assume only 1 rough level
-            }
-            else
-                Debug.LogWarning("Unable to read OSGB data from " + fileName);
-        }
-
-        foreach (int index in filesToUnload)
-        {
-            Destroy(_pagedNodes[index]);
-            _pagedNodes[index] = null;
-            _pagedNodes[0].SetActive(true);  // FIXME: assume only 1 rough level
-        }
+        _mainReader.RequestLoadingAndUnloading(this, filesToLoad, filesToUnload);
     }
 }

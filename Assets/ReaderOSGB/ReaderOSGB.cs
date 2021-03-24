@@ -23,6 +23,134 @@ public class ReaderOSGB : MonoBehaviour
     public Dictionary<uint, Object> _sharedObjects = new Dictionary<uint, Object>();
     public Dictionary<uint, Texture2D> _sharedTextures = new Dictionary<uint, Texture2D>();
 
+    public class PagingRequest
+    {
+        public PagedData pagedData;
+        public int childIndex, updatedStamp;
+    }
+    List<PagingRequest> _loadingRequests = new List<PagingRequest>();
+    List<PagingRequest> _unloadingRequests = new List<PagingRequest>();
+    Task _pagingRequestHandler;
+    object _taskMutex = new object();
+    bool _isTaskRunning = false;
+
+    public void RequestLoadingAndUnloading(PagedData data, List<int> toLoad, List<int> toUnload)
+    {
+        lock (_taskMutex)
+        {
+            foreach (int index in toLoad)
+            {
+                PagingRequest req = _loadingRequests.Find(
+                    c => c.pagedData.Equals(data) && c.childIndex.Equals(index));
+                if (req == null)
+                {
+                    req = new PagingRequest
+                        { pagedData = data, childIndex = index, updatedStamp = Time.frameCount };
+                    _loadingRequests.Add(req);
+                }
+                else
+                    req.updatedStamp = Time.frameCount;
+            }
+
+            foreach (int index in toUnload)
+            {
+                PagingRequest req = _unloadingRequests.Find(
+                    c => c.pagedData.Equals(data) && c.childIndex.Equals(index));
+                if (req == null)
+                {
+                    req = new PagingRequest
+                        { pagedData = data, childIndex = index, updatedStamp = Time.frameCount };
+                    _unloadingRequests.Add(req);
+                }
+                else
+                    req.updatedStamp = Time.frameCount;
+            }
+        }
+    }
+
+    void LoadOrUnloadData(PagedData data, int index, bool toLoad)
+    {
+        if (toLoad)
+        {
+            string fileName = data.getFullFileName(index);
+            GameObject fineNode = LoadSceneFromFile(fileName);
+            if (fineNode != null)
+            {
+                fineNode.transform.SetParent(this.transform, false);
+                data._pagedNodes[index] = fineNode;
+                data._pagedNodes[0].SetActive(false);  // FIXME: assume only 1 rough level
+            }
+            else
+                Debug.LogWarning("Unable to read OSGB data from " + fileName);
+        }
+        else
+        {
+            Destroy(data._pagedNodes[index]);
+            data._pagedNodes[index] = null;
+            data._pagedNodes[0].SetActive(true);  // FIXME: assume only 1 rough level
+        }
+    }
+
+    IEnumerator PagingTask()
+    {
+        _isTaskRunning = true;
+        while (_isTaskRunning)
+        {
+            PagedData pData0 = null;
+            int index0 = -1, currentFrame = Time.frameCount;
+            lock (_taskMutex)
+            {
+                foreach (PagingRequest req in _loadingRequests)
+                {
+                    if (req.updatedStamp >= currentFrame - 1)  // latest req
+                    {
+                        pData0 = req.pagedData; index0 = req.childIndex;
+                        _loadingRequests.Remove(req); break;
+                    }
+                }
+
+                if (index0 < 0)
+                {
+                    for (int i = 0; i < _loadingRequests.Count;)
+                    {
+                        PagingRequest req = _loadingRequests[i];
+                        if (req.updatedStamp < currentFrame - 10)  // too-old req
+                            _loadingRequests.RemoveAt(i);
+                        else ++i;
+                    }
+                }
+
+                if (_unloadingRequests.Count > 60)
+                {
+                    for (int i = 0; i < _unloadingRequests.Count;)
+                    {
+                        PagingRequest req = _unloadingRequests[i];
+                        if (req.updatedStamp >= currentFrame - 1)  // latest req
+                        {
+                            LoadOrUnloadData(req.pagedData, req.childIndex, false);
+                            _unloadingRequests.RemoveAt(i);
+                        }
+                        else if (req.updatedStamp < currentFrame - 10)  // too-old req
+                            _unloadingRequests.RemoveAt(i);
+                        else ++i;
+                    }
+                }
+            }
+
+            if (pData0 && index0 >= 0)
+                LoadOrUnloadData(pData0, index0, true);
+            //Debug.Log(_loadingRequests.Count + ", " + _unloadingRequests.Count);
+            yield return null;
+        }
+    }
+
+    IEnumerator StopPagingTask(Task task)
+    {
+        _isTaskRunning = false;
+        yield return null;
+        task.Stop();
+    }
+
     public GameObject LoadSceneData(string fileName, BinaryReader reader)
     {
         // Load header data
@@ -82,11 +210,14 @@ public class ReaderOSGB : MonoBehaviour
             Debug.LogWarning("Unable to read binary stream from " + fileName);
             return null;
         }
-        return LoadSceneData(fileName, new BinaryReader(stream));
+
+        GameObject gameScene = LoadSceneData(fileName, new BinaryReader(stream));
+        stream.Close(); return gameScene;
     }
     
     void Start()
     {
+        _pagingRequestHandler = new Task(PagingTask());
         if (_template == null)
             _template = new Material(Shader.Find("Standard"));
         
@@ -116,5 +247,10 @@ public class ReaderOSGB : MonoBehaviour
     void Update()
     {
         _currentFrustum = GeometryUtility.CalculateFrustumPlanes(Camera.main);
+    }
+
+    void OnDestroy()
+    {
+        StopPagingTask(_pagingRequestHandler);
     }
 }
