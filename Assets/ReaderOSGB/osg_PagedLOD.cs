@@ -37,6 +37,7 @@ public class osg_PagedLOD : osg_LOD
             for (uint i = 0; i < numRanges; ++i)
             {
                 string pagedFile = ReadString(reader);
+                //Debug.Log(i + ": " + pagedFile);
                 if (pagedData != null) pagedData._fileNames.Add(pagedFile);
             }
 

@@ -79,13 +79,22 @@ public class osg_StateSet : osg_Object
         int binNumber = reader.ReadInt32();  // _binNum
         string binName = ReadString(reader);  // _binName
         bool nestedBin = reader.ReadBoolean();  // _nestRenderBins
-
+        
         bool hasUpdateCB = reader.ReadBoolean();  // _updateCallback
         if (hasUpdateCB) LoadObject(gameObj, reader, owner);
 
         bool hasEventCB = reader.ReadBoolean();  // _eventCallback
         if (hasEventCB) LoadObject(gameObj, reader, owner);
 
+        if (owner._version >= 151)
+        {
+            bool hasDefListData = reader.ReadBoolean();  // _defineList
+            if (hasDefListData)
+            {
+                Debug.LogWarning("_defineList not implemented");
+                return false;
+            }
+        }
         return true;
     }
 }

@@ -114,6 +114,13 @@ public class ObjectBase
         else
             owner._sharedObjects[id] = gameObj;
 
+        if (owner._version < 154)
+        {
+            if (className == "osg_Geometry") className = "osg_Geometry_2";
+            else if (className == "osg_Drawable") className = "osg_Drawable_2";
+        }
+        //Debug.Log(className + "-" + id);
+
         System.Type classType = System.Type.GetType(className);
         if (classType == null)
         {
