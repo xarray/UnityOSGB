@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class osg_ShadeModel : osg_StateAttribute
+namespace osgEx
 {
-    public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
+    public class osg_ShadeModel : osg_StateAttribute
     {
-        if (!base.read(gameObj, reader, owner))
-            return false;
+        public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
+        {
+            if (!base.read(gameObj, reader, owner))
+                return false;
 
-        int shadeMode = reader.ReadInt32();  // _mode
-        return true;
+            int shadeMode = reader.ReadInt32();  // _mode
+            return true;
+        }
     }
 }

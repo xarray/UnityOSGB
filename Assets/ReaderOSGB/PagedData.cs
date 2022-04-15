@@ -3,74 +3,77 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class PagedData : MonoBehaviour
+namespace osgEx
 {
-    public enum RangeMode { Distance, PixelSize };
-    public RangeMode _rangeMode = RangeMode.Distance;
-    public string _rootFileName = "", _databasePath = "";
-    public BoundingSphere _bounds;
-    public ReaderOSGB _mainReader;
-
-    public List<string> _fileNames = new List<string>();
-    public List<Vector2> _ranges = new List<Vector2>();
-    public List<GameObject> _pagedNodes = new List<GameObject>();
-    string _fullPathPrefix = "";
-
-    public string getFullFileName(int index)
-    { return _fullPathPrefix + _fileNames[index]; }
-
-    void Start()
+    public class PagedData : MonoBehaviour
     {
-        _fullPathPrefix = Path.GetDirectoryName(_rootFileName) + Path.DirectorySeparatorChar;
-        if (_databasePath.Length > 0) _fullPathPrefix += _databasePath + Path.DirectorySeparatorChar;
-        while (_pagedNodes.Count < _fileNames.Count) _pagedNodes.Add(null);
-    }
+        public enum RangeMode { Distance, PixelSize };
+        public RangeMode _rangeMode = RangeMode.Distance;
+        public string _rootFileName = "", _databasePath = "";
+        public BoundingSphere _bounds;
+        public ReaderOSGB _mainReader;
 
-    void Update()
-    {
-        Camera mainCam = Camera.main;
-        Matrix4x4 world2Local = this.transform.worldToLocalMatrix;
-        Matrix4x4 local2World = this.transform.localToWorldMatrix;
+        public List<string> _fileNames = new List<string>();
+        public List<Vector2> _ranges = new List<Vector2>();
+        public List<GameObject> _pagedNodes = new List<GameObject>();
+        string _fullPathPrefix = "";
 
-        // Check LOD situation
-        float rangeValue = 0.0f;
-        if (_rangeMode == RangeMode.Distance)
+        public string getFullFileName(int index)
+        { return _fullPathPrefix + _fileNames[index]; }
+
+        void Start()
         {
-            Vector3 centerW = local2World.MultiplyPoint(_bounds.position);
-            rangeValue = (mainCam.transform.position - centerW).magnitude;
+            _fullPathPrefix = Path.GetDirectoryName(_rootFileName) + Path.DirectorySeparatorChar;
+            if (_databasePath.Length > 0) _fullPathPrefix += _databasePath + Path.DirectorySeparatorChar;
+            while (_pagedNodes.Count < _fileNames.Count) _pagedNodes.Add(null);
         }
-        else
+
+        void Update()
         {
-            Vector3 centerW = local2World.MultiplyPoint(_bounds.position);
-            Bounds bb = new Bounds(centerW, new Vector3(_bounds.radius, _bounds.radius, _bounds.radius) * 2.0f);
-            if (GeometryUtility.TestPlanesAABB(_mainReader._currentFrustum, bb))
+            Camera mainCam = Camera.main;
+            Matrix4x4 world2Local = this.transform.worldToLocalMatrix;
+            Matrix4x4 local2World = this.transform.localToWorldMatrix;
+
+            // Check LOD situation
+            float rangeValue = 0.0f;
+            if (_rangeMode == RangeMode.Distance)
             {
-                float distance = (centerW - mainCam.transform.position).magnitude;
-                float slope = Mathf.Tan(mainCam.fieldOfView * Mathf.Deg2Rad * 0.5f);
-                float projFactor = (0.5f * mainCam.pixelHeight) / (slope * distance);
-                rangeValue = _bounds.radius * projFactor;  // screenPixelRadius
+                Vector3 centerW = local2World.MultiplyPoint(_bounds.position);
+                rangeValue = (mainCam.transform.position - centerW).magnitude;
             }
             else
-                rangeValue = -1.0f;
-        }
+            {
+                Vector3 centerW = local2World.MultiplyPoint(_bounds.position);
+                Bounds bb = new Bounds(centerW, new Vector3(_bounds.radius, _bounds.radius, _bounds.radius) * 2.0f);
+                if (GeometryUtility.TestPlanesAABB(_mainReader._currentFrustum, bb))
+                {
+                    float distance = (centerW - mainCam.transform.position).magnitude;
+                    float slope = Mathf.Tan(mainCam.fieldOfView * Mathf.Deg2Rad * 0.5f);
+                    float projFactor = (0.5f * mainCam.pixelHeight) / (slope * distance);
+                    rangeValue = _bounds.radius * projFactor;  // screenPixelRadius
+                }
+                else
+                    rangeValue = -1.0f;
+            }
 
-        // Find files to load/unload
-        List<int> filesToLoad = new List<int>();
-        List<int> filesToUnload = new List<int>();
-        for (int i = 0; i < _ranges.Count; ++i)
-        {
-            string fileName = _fileNames[i];
-            if (fileName.Length == 0) continue;
+            // Find files to load/unload
+            List<int> filesToLoad = new List<int>();
+            List<int> filesToUnload = new List<int>();
+            for (int i = 0; i < _ranges.Count; ++i)
+            {
+                string fileName = _fileNames[i];
+                if (fileName.Length == 0) continue;
 
-            Vector2 range = _ranges[i];
-            bool unloaded = (_pagedNodes[i] == null);
-            if (range[0] < rangeValue && rangeValue < range[1])
+                Vector2 range = _ranges[i];
+                bool unloaded = (_pagedNodes[i] == null);
+                if (range[0] < rangeValue && rangeValue < range[1])
                 { if (unloaded) filesToLoad.Add(i); }
-            else if (!unloaded)
-                filesToUnload.Add(i);
-        }
+                else if (!unloaded)
+                    filesToUnload.Add(i);
+            }
 
-        // Update file loading/unloading status
-        _mainReader.RequestLoadingAndUnloading(this, filesToLoad, filesToUnload);
+            // Update file loading/unloading status
+            _mainReader.RequestLoadingAndUnloading(this, filesToLoad, filesToUnload);
+        }
     }
 }

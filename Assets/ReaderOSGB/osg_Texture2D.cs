@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class osg_Texture2D : osg_Texture
+namespace osgEx
 {
-    public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
+    public class osg_Texture2D : osg_Texture
     {
-        if (!base.read(gameObj, reader, owner))
-            return false;
+        public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
+        {
+            if (!base.read(gameObj, reader, owner))
+                return false;
 
-        bool hasImage = reader.ReadBoolean();  // _image
-        if (hasImage)
-            owner._preloadedTexture = LoadImage(gameObj, reader, owner);
+            bool hasImage = reader.ReadBoolean();  // _image
+            if (hasImage)
+                owner._preloadedTexture = LoadImage(gameObj, reader, owner);
 
-        int texWidth = reader.ReadInt32();
-        int texHeight = reader.ReadInt32();
-        return true;
+            int texWidth = reader.ReadInt32();
+            int texHeight = reader.ReadInt32();
+            return true;
+        }
     }
 }

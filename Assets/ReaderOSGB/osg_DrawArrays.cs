@@ -3,28 +3,31 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class osg_DrawArrays : osg_PrimitiveSet
+namespace osgEx
 {
-    public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
+    public class osg_DrawArrays : osg_PrimitiveSet
     {
-        GameObject parentObj = gameObj as GameObject;
-        if (!base.read(gameObj, reader, owner))
-            return false;
-
-        int first = reader.ReadInt32();  // First
-        int count = reader.ReadInt32();  // Count
-
-        GeometryData gd = parentObj.GetComponent<GeometryData>();
-        if (gd != null)
+        public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
         {
-            List<int> localIndices = new List<int>();
-            for (int i = 0; i < count; ++i)
+            GameObject parentObj = gameObj as GameObject;
+            if (!base.read(gameObj, reader, owner))
+                return false;
+
+            int first = reader.ReadInt32();  // First
+            int count = reader.ReadInt32();  // Count
+
+            GeometryData gd = parentObj.GetComponent<GeometryData>();
+            if (gd != null)
             {
-                int id = first + i; localIndices.Add(id);
-                if (gd._maxIndex < id) gd._maxIndex = id;
+                List<int> localIndices = new List<int>();
+                for (int i = 0; i < count; ++i)
+                {
+                    int id = first + i; localIndices.Add(id);
+                    if (gd._maxIndex < id) gd._maxIndex = id;
+                }
+                gd.addPrimitiveIndices(localIndices);
             }
-            gd.addPrimitiveIndices(localIndices);
+            return true;
         }
-        return true;
     }
 }

@@ -3,42 +3,45 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class osg_Drawable : osg_Node
+namespace osgEx
 {
-    public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
+    public class osg_Drawable : osg_Node
     {
-        if (!base.read(gameObj, reader, owner))
-            return false;
-        
-        bool hasInitBound = reader.ReadBoolean();  // _initialBound
-        if (hasInitBound)
+        public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
         {
-            long blockSize = ReadBracket(reader, owner);
-            Vector3 boundMin = new Vector3(
-                (float)reader.ReadDouble(), (float)reader.ReadDouble(), (float)reader.ReadDouble());
-            Vector3 boundMax = new Vector3(
-                (float)reader.ReadDouble(), (float)reader.ReadDouble(), (float)reader.ReadDouble());
+            if (!base.read(gameObj, reader, owner))
+                return false;
+
+            bool hasInitBound = reader.ReadBoolean();  // _initialBound
+            if (hasInitBound)
+            {
+                long blockSize = ReadBracket(reader, owner);
+                Vector3 boundMin = new Vector3(
+                    (float)reader.ReadDouble(), (float)reader.ReadDouble(), (float)reader.ReadDouble());
+                Vector3 boundMax = new Vector3(
+                    (float)reader.ReadDouble(), (float)reader.ReadDouble(), (float)reader.ReadDouble());
+            }
+
+            bool hasComputeBoundCB = reader.ReadBoolean();  // _computeBoundCallback
+            if (hasComputeBoundCB) LoadObject(gameObj, reader, owner);
+
+            bool hasShape = reader.ReadBoolean();  // _shape
+            if (hasShape) LoadObject(gameObj, reader, owner);
+
+            bool enableDisplaylists = reader.ReadBoolean();  // _supportsDisplayList
+            bool useDisplaylists = reader.ReadBoolean();  // _useDisplayList
+            bool useVBO = reader.ReadBoolean();  // _useVertexBufferObjects
+
+            if (owner._version >= 142)
+            {
+                int nodeMask = reader.ReadInt32();  // _nodeMask
+            }
+
+            if (owner._version >= 145)
+            {
+                bool active = reader.ReadBoolean();  // _cullingActive
+            }
+            return true;
         }
-
-        bool hasComputeBoundCB = reader.ReadBoolean();  // _computeBoundCallback
-        if (hasComputeBoundCB) LoadObject(gameObj, reader, owner);
-
-        bool hasShape = reader.ReadBoolean();  // _shape
-        if (hasShape) LoadObject(gameObj, reader, owner);
-
-        bool enableDisplaylists = reader.ReadBoolean();  // _supportsDisplayList
-        bool useDisplaylists = reader.ReadBoolean();  // _useDisplayList
-        bool useVBO = reader.ReadBoolean();  // _useVertexBufferObjects
-        
-        if (owner._version >= 142)
-        {
-            int nodeMask = reader.ReadInt32();  // _nodeMask
-        }
-
-        if (owner._version >= 145)
-        {
-            bool active = reader.ReadBoolean();  // _cullingActive
-        }
-        return true;
     }
 }

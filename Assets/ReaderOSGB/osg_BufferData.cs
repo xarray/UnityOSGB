@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class osg_BufferData : osg_Object
+namespace osgEx
 {
-    public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
+    public class osg_BufferData : osg_Object
     {
-        if (!base.read(gameObj, reader, owner))
-            return false;
-        
-        if (owner._version >= 147)
+        public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
         {
-            bool hasBufferObject = reader.ReadBoolean();  // BufferObject
-            if (hasBufferObject) LoadObject(gameObj, reader, owner);
+            if (!base.read(gameObj, reader, owner))
+                return false;
+
+            if (owner._version >= 147)
+            {
+                bool hasBufferObject = reader.ReadBoolean();  // BufferObject
+                if (hasBufferObject) LoadObject(gameObj, reader, owner);
+            }
+            return true;
         }
-        return true;
     }
 }

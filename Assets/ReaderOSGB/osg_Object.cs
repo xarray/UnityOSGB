@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class osg_Object : ObjectBase
+namespace osgEx
 {
-    public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
+    public class osg_Object : ObjectBase
     {
-        string name = ReadString(reader);  // _name
-        int dataVariance = reader.ReadInt32();  // _dataVariance
-        
-        bool hasUserData = reader.ReadBoolean();  // _userData
-        if (hasUserData)
+        public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
         {
-            Debug.LogWarning("_userData not implemented");
-            return false;
+            string name = ReadString(reader);  // _name
+            int dataVariance = reader.ReadInt32();  // _dataVariance
+
+            bool hasUserData = reader.ReadBoolean();  // _userData
+            if (hasUserData)
+            {
+                Debug.LogWarning("_userData not implemented");
+                return false;
+            }
+
+            if (name.Length > 0) gameObj.name = name;
+            return true;
         }
-        
-        if (name.Length > 0) gameObj.name = name;
-        return true;
     }
 }

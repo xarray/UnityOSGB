@@ -363,7 +363,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _template: {fileID: 0}
-  _fileOrPathName: E:\Engines\OpenSceneGraph\cessna.osgb
+  _fileOrPathName: E:\Engines\OpenSceneGraph\cessna_311.osgb
   _asOsgbFolder: 0
   _sceneType: 0
   _version: 0

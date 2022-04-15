@@ -5,15 +5,17 @@ using UnityEngine;
 
 namespace osgEx
 {
-    public class osg_Transform : osg_Group
+    public class osg_Array : osg_BufferData  // FIXME: version >= 147
     {
         public override bool read(Object gameObj, BinaryReader reader, ReaderOSGB owner)
         {
-            GameObject parentObj = gameObj as GameObject;
             if (!base.read(gameObj, reader, owner))
                 return false;
 
-            int referenceFrame = reader.ReadInt32();  // _referenceFrame
+            int binding = reader.ReadInt32();  // Binding
+            bool normalize = reader.ReadBoolean();  // Normalize
+            bool preserveDataType = reader.ReadBoolean();  // PreserveDataType
+
             return true;
         }
     }
