@@ -20,6 +20,11 @@ namespace osgEx
             }
 
             if (name.Length > 0) gameObj.name = name;
+            else if (gameObj.name.Contains("Child"))
+            {
+                string objName = gameObj.name;
+                gameObj.name = objName.Replace("Child", this.GetType().Name);
+            }
             return true;
         }
     }

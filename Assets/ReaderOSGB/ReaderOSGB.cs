@@ -78,7 +78,8 @@ namespace osgEx
                 GameObject fineNode = LoadSceneFromFile(fileName);
                 if (fineNode != null)
                 {
-                    fineNode.transform.SetParent(this.transform, false);
+                    fineNode.name = Path.GetFileNameWithoutExtension(fileName);
+                    fineNode.transform.SetParent(data.gameObject.transform, false);
                     data._pagedNodes[index] = fineNode;
                     data._pagedNodes[0].SetActive(false);  // FIXME: assume only 1 rough level
                 }
@@ -244,6 +245,25 @@ namespace osgEx
                 else
                     Debug.LogWarning("Unable to read OSGB data from " + _fileOrPathName);
             }
+
+            // Get global center & extents
+            MeshFilter[] mfList = GetComponentsInChildren<MeshFilter>();
+            Bounds totalBounds = new Bounds();
+            for (int j = 0; j < mfList.Length; ++j)
+            {
+                Matrix4x4 l2w = mfList[j].transform.localToWorldMatrix;
+                Vector3[] vertices = mfList[j].sharedMesh.vertices;
+                Bounds meshBounds = new Bounds();
+                for (int i = 0; i < vertices.Length; ++i)
+                {
+                    if (i == 0) meshBounds.center = l2w.MultiplyPoint(vertices[i]);
+                    else meshBounds.Encapsulate(l2w.MultiplyPoint(vertices[i]));
+                }
+
+                if (j == 0) totalBounds = meshBounds;
+                else totalBounds.Encapsulate(meshBounds);
+            }
+            this.transform.localPosition = -totalBounds.center;
         }
 
         void Update()

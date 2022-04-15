@@ -51,6 +51,7 @@ namespace osgEx
                         int mode = reader.ReadInt32();
 
                         uint size = reader.ReadUInt32();
+                        byte[] imageData = reader.ReadBytes((int)size);
                         if (size > 0)
                         {
                             TextureFormat format = TextureFormat.RGB24;  // TODO: other formats/data size
@@ -59,13 +60,16 @@ namespace osgEx
                                 if (pixelFormat == 0x1907) format = TextureFormat.RGB24;  // GL_RGB
                                 else if (pixelFormat == 0x1908) format = TextureFormat.RGBA32;  // GL_RGBA
                                 else if (pixelFormat == 0x80E1) format = TextureFormat.BGRA32;  // GL_BGRA
+                                else if (pixelFormat == 0x83F0)
+                                    format = TextureFormat.DXT1;  // GL_COMPRESSED_RGB_S3TC_DXT1_EXT
+                                else if (pixelFormat == 0x83F3)
+                                    format = TextureFormat.DXT5;  // GL_COMPRESSED_RGB_S3TC_DXT5_EXT
                                 else Debug.LogWarning("Unsupported texture pixel format " + pixelFormat);
                             }
                             else
                                 Debug.LogWarning("Unsupported texture data type " + dataType);
 
-                            byte[] imageData = reader.ReadBytes((int)size);
-                            tex2D = new Texture2D(s, r, format, false);
+                            tex2D = new Texture2D(s, t, format, false);
                             tex2D.LoadRawTextureData(imageData);
                             tex2D.Apply();
                         }

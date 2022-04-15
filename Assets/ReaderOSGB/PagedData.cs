@@ -31,23 +31,25 @@ namespace osgEx
         void Update()
         {
             Camera mainCam = Camera.main;
-            Matrix4x4 world2Local = this.transform.worldToLocalMatrix;
-            Matrix4x4 local2World = this.transform.localToWorldMatrix;
+            Matrix4x4 world2LocalOwner = _mainReader.transform.worldToLocalMatrix;
+            Matrix4x4 local2World = this.transform.localToWorldMatrix * world2LocalOwner;
+            Vector3 cameraPos = world2LocalOwner.MultiplyPoint(mainCam.transform.position);
 
             // Check LOD situation
             float rangeValue = 0.0f;
             if (_rangeMode == RangeMode.Distance)
             {
                 Vector3 centerW = local2World.MultiplyPoint(_bounds.position);
-                rangeValue = (mainCam.transform.position - centerW).magnitude;
+                rangeValue = (cameraPos - centerW).magnitude;
             }
             else
             {
                 Vector3 centerW = local2World.MultiplyPoint(_bounds.position);
-                Bounds bb = new Bounds(centerW, new Vector3(_bounds.radius, _bounds.radius, _bounds.radius) * 2.0f);
+                Bounds bb = new Bounds(
+                    centerW, new Vector3(_bounds.radius, _bounds.radius, _bounds.radius) * 2.0f);
                 if (GeometryUtility.TestPlanesAABB(_mainReader._currentFrustum, bb))
                 {
-                    float distance = (centerW - mainCam.transform.position).magnitude;
+                    float distance = (centerW - cameraPos).magnitude;
                     float slope = Mathf.Tan(mainCam.fieldOfView * Mathf.Deg2Rad * 0.5f);
                     float projFactor = (0.5f * mainCam.pixelHeight) / (slope * distance);
                     rangeValue = _bounds.radius * projFactor;  // screenPixelRadius
@@ -68,8 +70,7 @@ namespace osgEx
                 bool unloaded = (_pagedNodes[i] == null);
                 if (range[0] < rangeValue && rangeValue < range[1])
                 { if (unloaded) filesToLoad.Add(i); }
-                else if (!unloaded)
-                    filesToUnload.Add(i);
+                else if (!unloaded) filesToUnload.Add(i);
             }
 
             // Update file loading/unloading status

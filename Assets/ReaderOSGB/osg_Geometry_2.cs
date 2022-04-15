@@ -105,9 +105,9 @@ namespace osgEx
             // Mesh related components
             if (!hasNormals) mesh.RecalculateNormals();
             mesh.RecalculateBounds();
-            parentObj.AddComponent<MeshFilter>().sharedMesh = mesh;
             Object.Destroy(gd);
-
+            
+            parentObj.AddComponent<MeshFilter>().sharedMesh = mesh;
             if (mesh.vertexCount > 3)
             {
                 MeshCollider collider = parentObj.AddComponent<MeshCollider>();
