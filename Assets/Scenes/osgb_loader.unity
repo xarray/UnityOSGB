@@ -363,8 +363,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _template: {fileID: 0}
-  _fileOrPathName: F:\DataSet\DaHuaiShan\dhs.osgb
-  _asOsgbFolder: 0
+  _fileOrPathName: F:\DataSet\OSGB\mesh+mls\Data
+  _asOsgbFolder: 1
   _sceneType: 0
   _version: 0
   _useBrackets: 0
