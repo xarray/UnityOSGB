@@ -53,10 +53,18 @@ namespace osgEx
                         uint size = reader.ReadUInt32();
                         if (size > 0)
                         {
-                            byte[] imageData = reader.ReadBytes((int)size);
-
                             TextureFormat format = TextureFormat.RGB24;  // TODO: other formats/data size
-                            if (pixelFormat == 0x1908) format = TextureFormat.RGBA32;  // GL_RGBA
+                            if (dataType == 0x1401)
+                            {
+                                if (pixelFormat == 0x1907) format = TextureFormat.RGB24;  // GL_RGB
+                                else if (pixelFormat == 0x1908) format = TextureFormat.RGBA32;  // GL_RGBA
+                                else if (pixelFormat == 0x80E1) format = TextureFormat.BGRA32;  // GL_BGRA
+                                else Debug.LogWarning("Unsupported texture pixel format " + pixelFormat);
+                            }
+                            else
+                                Debug.LogWarning("Unsupported texture data type " + dataType);
+
+                            byte[] imageData = reader.ReadBytes((int)size);
                             tex2D = new Texture2D(s, r, format, false);
                             tex2D.LoadRawTextureData(imageData);
                             tex2D.Apply();

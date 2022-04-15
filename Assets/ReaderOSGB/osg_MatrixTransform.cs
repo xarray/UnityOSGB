@@ -40,8 +40,7 @@ namespace osgEx
                 return false;
 
             // _matrix
-            int property = reader.ReadInt32();
-            Debug.Log("property = " + property);
+            long blockSize = ReadBracket(reader, owner);
 
             Matrix4x4 matrix = new Matrix4x4();
             matrix.m00 = (float)reader.ReadDouble(); matrix.m10 = (float)reader.ReadDouble();

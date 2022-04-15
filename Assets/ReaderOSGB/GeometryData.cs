@@ -10,6 +10,8 @@ namespace osgEx
         public int _mode, _maxIndex = 0;
         public List<Vector2> _vec2Array;
         public List<Vector3> _vec3Array;
+        public List<Vector4> _vec4Array;
+        public List<Color> _vec4ubArray;
         public List<int> _indices = new List<int>();
 
         public void addPrimitiveIndices(List<int> localIndices)
