@@ -67,7 +67,7 @@ namespace osgEx
             Object.Destroy(gd);
 
             parentObj.AddComponent<MeshFilter>().sharedMesh = mesh;
-            if (mesh.vertexCount > 3)
+            if (mesh.vertexCount > 3 && owner._withMeshCollider)
             {
                 MeshCollider collider = parentObj.AddComponent<MeshCollider>();
                 collider.sharedMesh = mesh;

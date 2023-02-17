@@ -12,7 +12,7 @@ namespace osgEx
 
         public Material _template;
         public string _fileOrPathName;
-        public bool _asOsgbFolder;
+        public bool _asOsgbFolder, _withMeshCollider;
 
         public int _sceneType = 0, _version = 0;
         public bool _useBrackets = false;
@@ -263,7 +263,7 @@ namespace osgEx
                 if (j == 0) totalBounds = meshBounds;
                 else totalBounds.Encapsulate(meshBounds);
             }
-            this.transform.localPosition = -totalBounds.center;
+            this.transform.position = -totalBounds.center;
         }
 
         void Update()
