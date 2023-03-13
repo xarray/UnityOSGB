@@ -7,11 +7,45 @@ namespace osgEx
 {
     public class ObjectBase
     {
+#if UNITY_WEBGL || UNITY_EDITOR
+        public static Dictionary<string, System.Func<ObjectBase>> ctorFunc =
+            new Dictionary<string, System.Func<ObjectBase>>() {
+            { "osg_Object", () => { return new osg_Object(); } },
+            { "osg_LOD", () => { return new osg_LOD(); } },
+            { "osg_Node", () => { return new osg_Node(); } },
+            { "osg_PagedLOD", () => { return new osg_PagedLOD(); } },
+            { "osg_Group", () => { return new osg_Group(); } },
+            { "osg_Transform", () => { return new osg_Transform(); } },
+            { "osg_MatrixTransform", () => { return new osg_MatrixTransform(); } },
+            { "osg_Geode", () => { return new osg_Geode(); } },
+            { "osg_Drawable", () => { return new osg_Drawable(); } },
+            { "osg_Drawable_2", () => { return new osg_Drawable_2(); } },
+            { "osg_Geometry", () => { return new osg_Geometry(); } },
+            { "osg_Geometry_2", () => { return new osg_Geometry_2(); } },
+            { "osg_BufferData", () => { return new osg_BufferData(); } },
+            { "osg_DrawArrays", () => { return new osg_DrawArrays(); } },
+            { "osg_DrawElementsUByte", () => { return new osg_DrawElementsUByte(); } },
+            { "osg_DrawElementsUShort", () => { return new osg_DrawElementsUShort(); } },
+            { "osg_DrawElementsUInt", () => { return new osg_DrawElementsUInt(); } },
+            { "osg_Vec2Array", () => { return new osg_Vec2Array(); } },
+            { "osg_Vec3Array", () => { return new osg_Vec3Array(); } },
+            { "osg_Vec4Array", () => { return new osg_Vec4Array(); } },
+            { "osg_Vec4ubArray", () => { return new osg_Vec4ubArray(); } },
+            { "osg_StateSet", () => { return new osg_StateSet(); } },
+            { "osg_StateAttribute", () => { return new osg_StateAttribute(); } },
+            { "osg_Material", () => { return new osg_Material(); } },
+            { "osg_Texture", () => { return new osg_Texture(); } },
+            { "osg_Texture2D", () => { return new osg_Texture2D(); } },
+        };
+#endif
+
         public static string ReadString(BinaryReader reader)
         {
             int strLength = reader.ReadInt32();
-            char[] compressor = reader.ReadChars(strLength);
-            return new string(compressor);
+            byte[] bytes = reader.ReadBytes(strLength);
+            return System.Text.Encoding.UTF8.GetString(bytes);
+            //char[] compressor = reader.ReadChars(strLength);
+            //return new string(compressor);
         }
 
         public static long ReadBracket(BinaryReader reader, ReaderOSGB owner)
@@ -99,10 +133,11 @@ namespace osgEx
                     if (File.Exists(fileName))
                     {
                         byte[] fileData = File.ReadAllBytes(fileName);
-
                         tex2D = new Texture2D(2, 2);
                         tex2D.LoadImage(fileData);
                     }
+                    else
+                        Debug.LogWarning("Image file '" + fileName + "' not found");
                     break;
                 default: break;
             }
@@ -133,19 +168,33 @@ namespace osgEx
                 if (className == "osg_Geometry") className = "osg_Geometry_2";
                 else if (className == "osg_Drawable") className = "osg_Drawable_2";
             }
-            //Debug.Log(className + " - " + id);
+            //\Debug.Log(className + " - " + id);
 
+#if UNITY_WEBGL || UNITY_EDITOR
+            System.Func<ObjectBase> ctor = null;
+            if (!ctorFunc.TryGetValue(className, out ctor))
+            {
+                Debug.LogWarning("Object type " + className + " not implemented");
+                if (blockSize != -1) reader.BaseStream.Position += (blockSize - 4);
+                return false;
+            }
+
+            ObjectBase classObj = ctor.Invoke();
+#else
             System.Type classType = System.Type.GetType("osgEx." + className);
             if (classType == null)
             {
                 Debug.LogWarning("Object type " + className + " not implemented");
+                if (blockSize != -1) reader.BaseStream.Position += (blockSize - 4);
                 return false;
             }
 
             ObjectBase classObj = System.Activator.CreateInstance(classType) as ObjectBase;
+#endif
             if (classObj == null)
             {
                 Debug.LogWarning("Object instance " + className + " failed to create");
+                if (blockSize != -1) reader.BaseStream.Position += (blockSize - 4);
                 return false;
             }
             else
