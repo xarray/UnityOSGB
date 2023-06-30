@@ -2,29 +2,30 @@
 using UnityEngine;
 
 namespace osgEx
-{ 
+{
     public class osg_Texture2D : osg_Texture
     {
+        public int width { get; private set; }
+        public int height { get; private set; }
         public Texture2D texture2D;
         protected override void read(BinaryReader reader, osg_Reader owner)
         {
-            base.read(reader, owner);    
+            base.read(reader, owner);
 
             bool hasImage = reader.ReadBoolean();  // _image
             if (hasImage)
-                texture2D= LoadImage( reader, owner);
+                texture2D = LoadImage(reader, owner);
 
             int texWidth = reader.ReadInt32();
-            int texHeight = reader.ReadInt32(); 
-        } 
+            int texHeight = reader.ReadInt32();
+        }
         public static Texture2D LoadImage(BinaryReader reader, osg_Reader owner)
         {
             Texture2D tex2D = null;
-            if (owner._version > 94) { string className = ReadString(reader);
-                Debug.Log(className);
+            if (owner._version > 94)
+            {
+                string className = ReadString(reader);
             }
-            Debug.Log(owner._version);
-
             uint id = reader.ReadUInt32();
             if (owner._sharedTextures.ContainsKey(id))
                 return owner._sharedTextures[id];
@@ -64,7 +65,7 @@ namespace osgEx
                             }
                             else
                                 Debug.LogWarning("Unsupported texture data type " + dataType);
-                           
+
                             tex2D = new Texture2D(s, t, format, false);
                             tex2D.LoadRawTextureData(imageData);
                             tex2D.Apply();
@@ -108,8 +109,8 @@ namespace osgEx
             bool hasUserData = reader.ReadBoolean();  // _userData
             if (hasUserData)
             {
-              var  userData = LoadObject(reader, owner);
-            } 
+                var userData = LoadObject(reader, owner);
+            }
             owner._sharedTextures[id] = tex2D;
             return tex2D;
         }

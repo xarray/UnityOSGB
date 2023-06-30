@@ -1,10 +1,10 @@
-using System; 
+using System;
 using System.Collections.Generic;
-using System.IO; 
+using System.IO;
 using UnityEngine;
 
 namespace osgEx
-{ 
+{
     public class osg_Object
     {
         public static Dictionary<string, Func<osg_Object>> ctorFunc = new Dictionary<string, Func<osg_Object>>() {
@@ -22,7 +22,7 @@ namespace osgEx
 
             { "osg::DrawArrays",()=>{return new osg_DrawArrays(); } },
             { "osg::DrawElementsUByte",()=>{return new osg_DrawElementsUByte(); } },
-            { "osg::DrawElementsUShort",()=>{return new osg_DrawElementsUShort(); } }, 
+            { "osg::DrawElementsUShort",()=>{return new osg_DrawElementsUShort(); } },
             { "osg::DrawElementsUInt",()=>{return new osg_DrawElementsUInt(); } },
 
             { "osg::Vec2Array",()=>{return new osg_Vec2Array(); } },
@@ -35,14 +35,33 @@ namespace osgEx
             { "osg::Material",()=>{return new osg_Material(); } },
             { "osg::Texture",()=>{return new osg_Texture(); } },
             { "osg::Texture2D",()=>{return new osg_Texture2D(); } },
-          
-           
-        }; 
+
+            { "osg::DefaultUserDataContainer",()=>{return new osg_DefaultUserDataContainer(); } },
+            { "osg::UserDataContainer",()=>{return new osg_UserDataContainer(); } },
+
+            { "osg::BoolValueObject",()=>{return new osg_BoolValueObject(); } },
+            { "osg::CharValueObject",()=>{return new osg_CharValueObject(); } },
+            { "osg::UCharValueObject",()=>{return new osg_UCharValueObject(); } },
+            { "osg::ShortValueObject",()=>{return new osg_ShortValueObject(); } },
+            { "osg::UShortValueObject",()=>{return new osg_UShortValueObject(); } },
+            { "osg::IntValueObject",()=>{return new osg_IntValueObject(); } },
+            { "osg::UIntValueObject",()=>{return new osg_UIntValueObject(); } },
+            { "osg::FloatValueObject",()=>{return new osg_FloatValueObject(); } },
+            { "osg::DoubleValueObject",()=>{return new osg_DoubleValueObject(); } },
+            { "osg::StringValueObject",()=>{return new osg_StringValueObject(); } },
+            { "osg::Vec2fValueObject",()=>{return new osg_Vec2fValueObject(); } },
+            { "osg::Vec3fValueObject",()=>{return new osg_Vec3fValueObject(); } },
+            { "osg::Vec4fValueObject",()=>{return new osg_Vec4fValueObject(); } },
+            { "osg::Vec2dValueObject",()=>{return new osg_Vec2dValueObject(); } },
+            { "osg::Vec3dValueObject",()=>{return new osg_Vec3dValueObject(); } },
+            { "osg::Vec4dValueObject",()=>{return new osg_Vec4dValueObject(); } },
+
+        };
         public static string ReadString(BinaryReader reader)
         {
             int strLength = reader.ReadInt32();
-            byte[] bytes=reader.ReadBytes(strLength); 
-            using (MemoryStream stream=new MemoryStream(bytes))
+            byte[] bytes = reader.ReadBytes(strLength);
+            using (MemoryStream stream = new MemoryStream(bytes))
             {
                 using (BinaryReader strReader = new BinaryReader(stream))
                 {
@@ -50,8 +69,8 @@ namespace osgEx
                     string str = new string(compressor);
                     return str;
                 }
-            } 
-        } 
+            }
+        }
         public static long ReadBracket(BinaryReader reader, osg_Reader owner)
         {
             long value = -1;
@@ -71,7 +90,7 @@ namespace osgEx
                 }
             }
             return -1;
-        } 
+        }
         public static osg_Object LoadObject(BinaryReader reader, osg_Reader owner)
         {
             string className = ReadString(reader);
@@ -98,7 +117,7 @@ namespace osgEx
             }
             else
             {
-                throw new Exception("读取失败");
+                throw new Exception(string.Format("未实现{0}类 ", className));
             }
         }
 
@@ -116,14 +135,7 @@ namespace osgEx
             {
                 userData = LoadObject(reader, owner);
             }
-            //if (name.Length > 0) gameObj.name = name;
-            //else if (gameObj.name.Contains("Child"))
-            //{
-            //    string objName = gameObj.name;
-            //    gameObj.name = objName.Replace("Child", this.GetType().Name);
-            //}
         }
-
     }
 
 }

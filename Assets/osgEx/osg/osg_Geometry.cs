@@ -335,7 +335,7 @@ namespace osgEx
             result = new T[numArrayData][];
             for (uint i = 0; i < numArrayData; ++i)
             {
-                blockSize = ReadBracket(reader, owner);
+                //blockSize = ReadBracket(reader, owner);
                 result[i] = readArrayData<T>(reader, owner);
             }
             return result;

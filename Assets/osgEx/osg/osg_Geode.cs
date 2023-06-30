@@ -4,7 +4,7 @@ namespace osgEx
 {
     public class osg_Geode : osg_Node
     {
-        public osg_Geometry[] drawables;
+        public osg_Geometry[] geometrys;
         protected override void read(BinaryReader reader, osg_Reader owner)
         {
             base.read(reader, owner);
@@ -14,10 +14,10 @@ namespace osgEx
             {
                 uint numChildren = reader.ReadUInt32();
                 long blockSize = ReadBracket(reader, owner);
-                drawables = new osg_Geometry[numChildren];
+                geometrys = new osg_Geometry[numChildren];
                 for (uint i = 0; i < numChildren; ++i)
                 {
-                    drawables[i] = LoadObject(reader, owner) as osg_Geometry; 
+                    geometrys[i] = LoadObject(reader, owner) as osg_Geometry; 
                 }
             } 
         }
