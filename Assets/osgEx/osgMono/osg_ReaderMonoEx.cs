@@ -7,6 +7,7 @@ namespace osgEx
     {
         public static GameObject CreateGameObject(this osg_Reader osgReader, GameObject parent = null)
         {
+           
             if (osgReader == null)
             {
                 throw new System.ArgumentNullException();

@@ -1,16 +1,14 @@
-﻿using System; 
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using UnityEngine; 
+using UnityEngine;
 
 namespace osgEx
-{ 
+{
     public class osgManager : MonoSingleton<osgManager>
     {
         private int frameCount;
         private bool needUpdateCalculateFrustumPlanes;
-        private Plane[] m_calculateFrustumPlanes; 
+        private Plane[] m_calculateFrustumPlanes;
         public Plane[] CalculateFrustumPlanes
         {
             get
@@ -24,6 +22,9 @@ namespace osgEx
                 return m_calculateFrustumPlanes;
             }
         }
+        /// <summary>
+        /// 网格使用的材质
+        /// </summary>
         [SerializeField]
         private Material m_material;
         public Material material
@@ -35,15 +36,20 @@ namespace osgEx
                     if (QualitySettings.renderPipeline == null)
                     {
                         m_material = new Material(Shader.Find("Standard"));
+
                     }
                     else
                     {
-                        m_material = new Material(Shader.Find("Lit"));
+                        m_material = new Material(QualitySettings.renderPipeline.defaultShader);//  Shader.Find("Lit")
                     }
                 }
                 return m_material;
             }
         }
+        /// <summary>
+        /// 是否创建碰撞器
+        /// </summary>
+        public bool colliderEnabled; 
         private int? m_materialMainTexID;
         public int materialMainTexID
         {
@@ -53,6 +59,7 @@ namespace osgEx
                 return m_materialMainTexID.Value;
             }
         }
+
         private void OnCameraMove()
         {
             m_cameraStopTime = 0;
@@ -63,27 +70,12 @@ namespace osgEx
             base.__Awake();
             m_calculateFrustumPlanes = new Plane[6];
         }
-#if UNITY_EDITOR
-        public string __rootPath;
-        public string[] __filePath;
-        private void Start()
-        {
-            Camera.main.GetOrAddComponent<TransformEx>().onChanged += OnCameraMove;
-            if (string.IsNullOrEmpty(__rootPath) || __filePath == null)
-            {
-                return;
-            }
-            var dir = new DirectoryInfo(__rootPath);
-            var dirs = dir.GetDirectories().Select(x => x.Name + "/" + x.Name + ".osgb").ToArray();
 
-            LoadOSGB(__rootPath, dirs);
-        }
-#else
         private void Start()
         {
             Camera.main.GetOrAddComponent<TransformEx>().onChanged += OnCameraMove;
         }
-#endif
+
 
         protected override void __OnDestroy()
         {
@@ -103,7 +95,7 @@ namespace osgEx
             m_cameraStopTime += Time.deltaTime;
             m_unloadTime += Time.deltaTime;
             if (m_unloadTime > 60)
-            { 
+            {
                 Resources.UnloadUnusedAssets();
                 m_unloadTime = 0;
             }
@@ -119,7 +111,7 @@ namespace osgEx
                 o.transform.parent = parent.transform;
                 o.transform.localPosition = Vector3.zero;
                 o.transform.localRotation = Quaternion.identity;
-                o.transform.localScale = Vector3.one;
+                o.transform.localScale = Vector3.one; 
                 var loadHelper = o.AddComponent<osgMono_LoadHelper>();
                 loadHelper.filePath = Path.Combine(rootPath, item); ;
                 loadHelper.Load();

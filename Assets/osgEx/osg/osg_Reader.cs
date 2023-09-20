@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using UnityEngine.Networking;
 using UnityEngine;
-using System.Runtime.InteropServices.ComTypes;
+using UnityEngine.Networking;
 
 namespace osgEx
 {
-    public class osg_Debug
-    {
 
-    }
     public class osg_Reader
     {
         public class osg_AsyncOperation : CustomYieldInstruction
@@ -20,6 +16,7 @@ namespace osgEx
             public osg_Reader osgReader;
             public osg_AsyncOperation(string url)
             {
+                //url=UnityWebRequest.EscapeURL(url);
                 UnityWebRequest webRequest = UnityWebRequest.Get(url);
                 webRequest.SendWebRequest().completed += (op) =>
                 {
@@ -31,7 +28,7 @@ namespace osgEx
                             {
                                 using (BinaryReader binaryReader = new BinaryReader(binartStream))
                                 {
-                                    osgReader = CreateFromBinaryReader(binaryReader, url);
+                                    osgReader = osg_Reader.LoadFromBinaryReader(binaryReader, url);
                                     osgReader.filePath = url;
                                 }
                             }
@@ -65,7 +62,7 @@ namespace osgEx
         public Dictionary<uint, osg_Object> _sharedObjects = new Dictionary<uint, osg_Object>();
         public Dictionary<uint, Texture2D> _sharedTextures = new Dictionary<uint, Texture2D>();
 
-        private static osg_Reader CreateFromBinaryReader(BinaryReader reader, string filePath)
+        static osg_Reader LoadFromBinaryReader(BinaryReader reader, string filePath)
         {
             var osg_reader = new osg_Reader();
             osg_reader.filePath = filePath;
@@ -91,7 +88,7 @@ namespace osgEx
             osg_reader.root = osg_Object.LoadObject(reader, osg_reader) as osg_Node;
             return osg_reader;
         }
-        public static osg_Reader CreateFromPath(string filePath)
+        public static osg_Reader LoadFromFile(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -105,16 +102,55 @@ namespace osgEx
                     Debug.LogWarning("Unable to read binary stream from " + filePath);
                     return null;
                 }
-                using (BinaryReader reader = new BinaryReader(stream))
-                {
-                    var osgReader = CreateFromBinaryReader(reader, filePath);
-                    return osgReader;
-                }
+                return LoadFromStream(stream, filePath);
             }
         }
-        public static osg_AsyncOperation CreateFromWebRequest(string url)
+        public static osg_AsyncOperation LoadFromWebRequest(string url)
         {
             return new osg_AsyncOperation(url);
+        }
+        //public static async osg_Reader Load()
+        //{ 
+        //    UnityWebRequest webRequest = UnityWebRequest.Get(url);
+        //    await webRequest.SendWebRequest().ToUniTask();
+        //    switch (webRequest.result)
+        //    {
+        //        case UnityWebRequest.Result.Success:
+        //            byte[] binary = webRequest.downloadHandler.data;
+        //            using (MemoryStream binartStream = new MemoryStream(binary))
+        //            {
+        //                using (BinaryReader binaryReader = new BinaryReader(binartStream))
+        //                {
+                          
+        //                    osgReader = osg_Reader.LoadFromBinaryReader(binaryReader, url);
+        //                    osgReader.filePath = url;
+        //                }
+        //            }
+        //            break;
+        //        case UnityWebRequest.Result.InProgress:
+        //        case UnityWebRequest.Result.ConnectionError:
+        //        case UnityWebRequest.Result.ProtocolError:
+        //        case UnityWebRequest.Result.DataProcessingError:
+        //            Debug.Log(webRequest.result.ToString() + "\n" + url);
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+        public static osg_Reader LoadFromMemory(byte[] binary, string filePath)
+        {
+            using (MemoryStream binartStream = new MemoryStream(binary))
+            {
+                return LoadFromStream(binartStream, filePath);
+            }
+        }
+        public static osg_Reader LoadFromStream(Stream stream, string filePath)
+        {
+            using (BinaryReader reader = new BinaryReader(stream))
+            {
+                var osgReader = LoadFromBinaryReader(reader, filePath);
+                return osgReader;
+            }
         }
     }
 }

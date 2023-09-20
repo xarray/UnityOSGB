@@ -101,7 +101,6 @@
     <Compile Include="Assets\ReaderOSGB\osg_Drawable_2.cs" />
     <Compile Include="Assets\ReaderOSGB\osg_Object.cs" />
     <Compile Include="Assets\ReaderOSGB\osg_VertexBufferObject.cs" />
-    <Compile Include="Assets\Scenes\NewBehaviourScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

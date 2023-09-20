@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace osgEx
 {
@@ -17,7 +11,8 @@ namespace osgEx
         public MeshRenderer meshRenderer { get { if (m_meshRenderer == null) { m_meshRenderer = this.GetOrAddComponent<MeshRenderer>(); } return m_meshRenderer; } }
         private MeshFilter m_meshFilter;
         public MeshFilter meshFilter { get { if (m_meshFilter == null) { m_meshFilter = this.GetOrAddComponent<MeshFilter>(); } return m_meshFilter; } }
-
+        private MeshCollider m_meshCollider;
+        public MeshCollider meshCollider { get { if (m_meshCollider == null) { m_meshCollider = this.GetOrAddComponent<MeshCollider>(); } return m_meshCollider; } }
         public Mesh currentMesh { get; private set; }
 
         void Generate()
@@ -34,6 +29,9 @@ namespace osgEx
             currentMesh.triangles = osgGeometry.indices;
             currentMesh.uv = osgGeometry.uv[0];
             meshFilter.sharedMesh = currentMesh;
+            meshCollider.sharedMesh = currentMesh; 
+            meshCollider.enabled = osgManager.Instance.colliderEnabled;
+
             if (osgGeometry.normals != null)
             {
                 currentMesh.normals = osgGeometry.normals;
@@ -49,7 +47,7 @@ namespace osgEx
             if (currentMesh != null)
             {
                 Destroy(currentMesh);
-            } 
+            }
         }
     }
 }

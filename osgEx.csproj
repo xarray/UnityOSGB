@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\osgEx\osg\osg_BufferObject.cs" />
+    <Compile Include="Assets\osgEx\tools\Singleton.cs" />
     <Compile Include="Assets\osgEx\osgMono\osgMono_Geometry.cs" />
     <Compile Include="Assets\osgEx\osgMono\osgMono_Geode.cs" />
     <Compile Include="Assets\osgEx\osgMono\osgMono_Base.cs" />
@@ -65,12 +66,14 @@
     <Compile Include="Assets\osgEx\osg\osg_LOD.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Vec4ubArray.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Transform.cs" />
+    <Compile Include="Assets\osgEx\tools\TransformEx.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Drawable.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Texture2D.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Object.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Group.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Array.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Node.cs" />
+    <Compile Include="Assets\osgEx\tools\ComponentEx.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Geode.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Texture.cs" />
     <Compile Include="Assets\osgEx\osg\osg_NodeCallback.cs" />
@@ -89,6 +92,7 @@
     <Compile Include="Assets\osgEx\osg\osg_PrimitiveSet.cs" />
     <Compile Include="Assets\osgEx\osg\osg_EllipsoidModel.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Vec4Array.cs" />
+    <Compile Include="Assets\osgEx\osgMono\osgMono_LoadHelper.cs" />
     <Compile Include="Assets\osgEx\osgMono\osgManager.cs" />
     <Compile Include="Assets\osgEx\osg\osg_StateAttribute.cs" />
     <Compile Include="Assets\osgEx\osgMono\osg_ReaderMonoEx.cs" />
@@ -99,10 +103,7 @@
     <Compile Include="Assets\osgEx\osg\osg_UserDataContainer.cs" />
     <Compile Include="Assets\osgEx\osgMono\osgMono_PagedLOD.cs" />
     <Compile Include="Assets\osgEx\osg\osg_Geometry.cs" />
-    <Compile Include="Assets\osgEx\osgMono\osgMono_LoadHelper.cs" />
-    <Compile Include="Assets\osgEx\tools\ComponentEx.cs" />
-    <Compile Include="Assets\osgEx\tools\Singleton.cs" />
-    <Compile Include="Assets\osgEx\tools\TransformEx.cs" />
+    <Compile Include="Assets\osgEx\TestLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\osgEx\osgEx.asmdef" />

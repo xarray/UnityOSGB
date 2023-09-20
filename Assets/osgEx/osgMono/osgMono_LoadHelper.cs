@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 namespace osgEx
 {
@@ -45,15 +41,19 @@ namespace osgEx
         }
         IEnumerator coroutine_loading()
         {
-            var op = osg_Reader.CreateFromWebRequest(filePath);
+            gameObject.name = "loading_" + Path.GetFileName(filePath);
+            var op = osg_Reader.LoadFromWebRequest(filePath);
             yield return op;
             if (op.osgReader != null)
             {
+                gameObject.name = "loaded_" + Path.GetFileName(filePath);
                 loadedGameObject = op.osgReader.CreateGameObject(gameObject);
             }
             else
             {
+                gameObject.name = "error_" + Path.GetFileName(filePath);
                 loadedGameObject = new GameObject();
+                loadedGameObject.transform.parent = transform;
             }
             m_loadCorutine = null;
             yield break;
