@@ -88,7 +88,7 @@ namespace osgEx
         private float m_cameraStopTime;
         public float updateIntervalTime { get; set; } = 2;
         public bool CanUpdatePaged { get => m_cameraStopTime > updateIntervalTime; }
-        public float m_unloadTime;
+        private float m_unloadTime;
 
         private void Update()
         {

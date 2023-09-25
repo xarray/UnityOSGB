@@ -32,6 +32,7 @@ namespace osgEx
 
             { "osg::StateSet",()=>{return new osg_StateSet(); } },
             { "osg::StateAttribute",()=>{return new osg_StateAttribute(); } },
+            { "osg::BlendFunc",()=>{return new osg_BlendFunc(); } },
             { "osg::Material",()=>{return new osg_Material(); } },
             { "osg::Texture",()=>{return new osg_Texture(); } },
             { "osg::Texture2D",()=>{return new osg_Texture2D(); } },
