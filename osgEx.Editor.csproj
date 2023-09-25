@@ -8,11 +8,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
-    <ProjectGuid>{16FD64CD-EFBD-5582-A8C6-8AE3C822495F}</ProjectGuid>
+    <RootNamespace>osgEx.Editor</RootNamespace>
+    <ProjectGuid>{BC4157E2-C8A6-0327-C4EE-3D09B0023E32}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>osgEx</AssemblyName>
+    <AssemblyName>osgEx.Editor</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -48,7 +48,7 @@
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Package</UnityProjectGenerator>
     <UnityProjectGeneratorVersion>2.0.18</UnityProjectGeneratorVersion>
-    <UnityProjectType>Game:1</UnityProjectType>
+    <UnityProjectType>Editor:5</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2020.3.48f1c1</UnityVersion>
   </PropertyGroup>
@@ -56,60 +56,10 @@
     <Analyzer Include="E:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_BufferObject.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\tools\Singleton.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\mono\osgMono_Geometry.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\mono\osgMono_Geode.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\mono\osgMono_Base.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_ShadeModel.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Callback.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_BlendFunc.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_LOD.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Vec4ubArray.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Transform.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\tools\TransformEx.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Drawable.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Texture2D.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Object.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Group.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Array.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Node.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\tools\ComponentEx.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Geode.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Texture.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\tools\aCameraControl.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_NodeCallback.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Material.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_DrawArrays.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\tools\VirtualCameraController.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_ElementBufferObject.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_MatrixTransform.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_StateSet.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_DrawElementsUByte.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_VertexBufferObject.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_ValueObject.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_PagedLOD.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Vec2Arrray.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\TestLoader.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_DrawElementsUInt.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_BufferData.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_PrimitiveSet.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_EllipsoidModel.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Vec4Array.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\mono\osgMono_LoadHelper.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\mono\osgManager.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_StateAttribute.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Vec3Aarray.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_DrawElementsUShort.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Reader.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_ClusterCullingCallback.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg_MaterialData.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_UserDataContainer.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\mono\osgMono_PagedLOD.cs" />
-    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Geometry.cs" />
+    <Compile Include="Assets\osgEx\osg.Editor\osg_MaterialDataEditor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\osgEx\osg.Runtime\osgEx.asmdef" />
+    <None Include="Assets\osgEx\osg.Editor\osgEx.Editor.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -720,6 +670,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="osgEx.Runtime.csproj">
+      <Project>{9C0B80BE-8EEF-283E-0B59-E1BB6F7D1CB3}</Project>
+      <Name>osgEx.Runtime</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

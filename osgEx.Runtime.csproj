@@ -8,11 +8,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
-    <ProjectGuid>{16FD64CD-EFBD-5582-A8C6-8AE3C822495F}</ProjectGuid>
+    <RootNamespace>osgEx.Runtime</RootNamespace>
+    <ProjectGuid>{9C0B80BE-8EEF-283E-0B59-E1BB6F7D1CB3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <AssemblyName>osgEx</AssemblyName>
+    <AssemblyName>osgEx.Runtime</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseDirectory>.</BaseDirectory>
@@ -109,7 +109,7 @@
     <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Geometry.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\osgEx\osg.Runtime\osgEx.asmdef" />
+    <None Include="Assets\osgEx\osg.Runtime\osgEx.Runtime.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

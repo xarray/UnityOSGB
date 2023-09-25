@@ -26,40 +26,22 @@ namespace osgEx
         /// 网格使用的材质
         /// </summary>
         [SerializeField]
-        private Material m_material;
-        public Material material
+        private osg_MaterialData m_materialData;
+        public osg_MaterialData materialData
         {
             get
             {
-                if (m_material == null)
+                if (m_materialData == null)
                 {
-                    if (QualitySettings.renderPipeline == null)
-                    {
-                        m_material = new Material(Shader.Find("Standard"));
-
-                    }
-                    else
-                    {
-                        m_material = new Material(QualitySettings.renderPipeline.defaultShader);//  Shader.Find("Lit")
-                    }
+                    m_materialData = Resources.Load<osg_MaterialData>("osg_Resources/default");
                 }
-                return m_material;
+                return m_materialData;
             }
         }
         /// <summary>
         /// 是否创建碰撞器
         /// </summary>
-        public bool colliderEnabled; 
-        private int? m_materialMainTexID;
-        public int materialMainTexID
-        {
-            get
-            {
-                m_materialMainTexID ??= material.GetTexturePropertyNameIDs()[0];
-                return m_materialMainTexID.Value;
-            }
-        }
-
+        public bool colliderEnabled;
         private void OnCameraMove()
         {
             m_cameraStopTime = 0;
@@ -86,7 +68,8 @@ namespace osgEx
             base.__OnDestroy();
         }
         private float m_cameraStopTime;
-        public float updateIntervalTime { get; set; } = 2;
+    
+        public float updateIntervalTime = 1;
         public bool CanUpdatePaged { get => m_cameraStopTime > updateIntervalTime; }
         private float m_unloadTime;
 
@@ -111,7 +94,7 @@ namespace osgEx
                 o.transform.parent = parent.transform;
                 o.transform.localPosition = Vector3.zero;
                 o.transform.localRotation = Quaternion.identity;
-                o.transform.localScale = Vector3.one; 
+                o.transform.localScale = Vector3.one;
                 var loadHelper = o.AddComponent<osgMono_LoadHelper>();
                 loadHelper.filePath = Path.Combine(rootPath, item); ;
                 loadHelper.Load();

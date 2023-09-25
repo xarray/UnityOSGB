@@ -420,9 +420,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1fb889e4c7d6c94b8a45c02d01c8d7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_material: {fileID: 0}
+  m_materialData: {fileID: 0}
   colliderEnabled: 1
-  m_unloadTime: 0
+  updateIntervalTime: 1
 --- !u!4 &1856522706
 Transform:
   m_ObjectHideFlags: 0

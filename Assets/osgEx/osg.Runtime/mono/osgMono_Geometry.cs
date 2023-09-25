@@ -17,11 +17,11 @@ namespace osgEx
 
         void Generate()
         {
-            meshRenderer.material = osgManager.Instance.material;
+            meshRenderer.material = osgManager.Instance.materialData.Material;
 
             var m_materialPropertyBlock = new MaterialPropertyBlock();
             var texture = (osgGeometry.stateSet?.textures?[0] as osg_Texture2D).texture2D;
-            m_materialPropertyBlock.SetTexture(osgManager.Instance.materialMainTexID, texture);
+            m_materialPropertyBlock.SetTexture(osgManager.Instance.materialData.MainTexProperty, texture);
             meshRenderer.SetPropertyBlock(m_materialPropertyBlock);
 
             currentMesh = new Mesh();
@@ -29,7 +29,7 @@ namespace osgEx
             currentMesh.triangles = osgGeometry.indices;
             currentMesh.uv = osgGeometry.uv[0];
             meshFilter.sharedMesh = currentMesh;
-            meshCollider.sharedMesh = currentMesh; 
+            meshCollider.sharedMesh = currentMesh;
             meshCollider.enabled = osgManager.Instance.colliderEnabled;
 
             if (osgGeometry.normals != null)

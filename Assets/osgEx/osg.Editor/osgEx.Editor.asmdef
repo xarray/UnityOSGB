@@ -1,0 +1,16 @@
+{
+    "name": "osgEx.Editor",
+    "rootNamespace": "osgEx.Editor",
+    "references": [
+        "GUID:dd23c6a339f3110429ba5310f4be2375"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
