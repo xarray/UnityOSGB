@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Security.Policy;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -28,8 +29,16 @@ namespace osgEx
                             {
                                 using (BinaryReader binaryReader = new BinaryReader(binartStream))
                                 {
-                                    osgReader = osg_Reader.LoadFromBinaryReader(binaryReader, url);
-                                    osgReader.filePath = url;
+                                    try
+                                    {
+                                        osgReader = osg_Reader.LoadFromBinaryReader(binaryReader, url);
+                                        osgReader.filePath = url;
+                                    }
+                                    catch (System.Exception ex)
+                                    {
+                                        Debug.Log(url);
+                                        throw ex;
+                                    }
                                 }
                             }
                             break;
@@ -109,39 +118,20 @@ namespace osgEx
         {
             return new osg_AsyncOperation(url);
         }
-        //public static async osg_Reader Load()
-        //{ 
-        //    UnityWebRequest webRequest = UnityWebRequest.Get(url);
-        //    await webRequest.SendWebRequest().ToUniTask();
-        //    switch (webRequest.result)
-        //    {
-        //        case UnityWebRequest.Result.Success:
-        //            byte[] binary = webRequest.downloadHandler.data;
-        //            using (MemoryStream binartStream = new MemoryStream(binary))
-        //            {
-        //                using (BinaryReader binaryReader = new BinaryReader(binartStream))
-        //                {
-                          
-        //                    osgReader = osg_Reader.LoadFromBinaryReader(binaryReader, url);
-        //                    osgReader.filePath = url;
-        //                }
-        //            }
-        //            break;
-        //        case UnityWebRequest.Result.InProgress:
-        //        case UnityWebRequest.Result.ConnectionError:
-        //        case UnityWebRequest.Result.ProtocolError:
-        //        case UnityWebRequest.Result.DataProcessingError:
-        //            Debug.Log(webRequest.result.ToString() + "\n" + url);
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
         public static osg_Reader LoadFromMemory(byte[] binary, string filePath)
         {
             using (MemoryStream binartStream = new MemoryStream(binary))
             {
-                return LoadFromStream(binartStream, filePath);
+                try
+                {
+                    return LoadFromStream(binartStream, filePath);
+                }
+                catch  
+                {
+                    Debug.Log(filePath);
+                    throw;
+                }
+              
             }
         }
         public static osg_Reader LoadFromStream(Stream stream, string filePath)
