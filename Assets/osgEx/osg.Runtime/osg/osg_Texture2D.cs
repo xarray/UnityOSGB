@@ -5,42 +5,76 @@ namespace osgEx
 {
     public class osg_Texture2D : osg_Texture
     {
-        public int width { get; private set; }
-        public int height { get; private set; }
-        public Texture2D texture2D;
+        ~osg_Texture2D()
+        {
+            if (m_texture2D != null)
+            {
+                Object.Destroy(m_texture2D);
+            }
+        }
+        private int width;
+        private int height;
+        private string fileName;
+        private byte[] rawTextureData;
+        private byte[] imageData;
+        private uint id;
+        private TextureFormat format;
+        private int decision;
+
+        private Texture2D m_texture2D;
+        public Texture2D texture2D
+        {
+            get
+            {
+                if (m_texture2D == null)
+                {
+                    generate();
+                }
+                return m_texture2D;
+            }
+        }
         protected override void read(BinaryReader reader, osg_Reader owner)
         {
             base.read(reader, owner);
 
             bool hasImage = reader.ReadBoolean();  // _image
             if (hasImage)
-                texture2D = LoadImage(reader, owner);
+                readImage(reader, owner);
 
             int texWidth = reader.ReadInt32();
             int texHeight = reader.ReadInt32();
         }
-        public static Texture2D LoadImage(BinaryReader reader, osg_Reader owner)
+        protected void readImage(BinaryReader reader, osg_Reader owner)
         {
-            Texture2D tex2D = null;
             if (owner._version > 94)
             {
                 string className = ReadString(reader);
             }
-            uint id = reader.ReadUInt32();
-            if (owner._sharedTextures.ContainsKey(id))
-                return owner._sharedTextures[id];
+            id = reader.ReadUInt32();
+            if (owner._sharedObjects.TryGetValue(id, out osg_Object other))
+            {
+                fileName = ((osg_Texture2D)other).fileName;
+                width = ((osg_Texture2D)other).width;
+                height = ((osg_Texture2D)other).height;
+                rawTextureData = ((osg_Texture2D)other).rawTextureData;
+                imageData = ((osg_Texture2D)other).imageData;
+                format = ((osg_Texture2D)other).format;
+                decision = ((osg_Texture2D)other).decision;
+                return;
+            }
+            owner._sharedObjects.Add(id, this);
 
-            string fileName = ReadString(reader);
+            fileName = ReadString(reader);
             int writeHint = reader.ReadInt32();
-            int decision = reader.ReadInt32();
+            decision = reader.ReadInt32();
             switch (decision)
             {
                 case 0:  // IMAGE_INLINE_DATA
                     {
                         int origin = reader.ReadInt32();
                         int s = reader.ReadInt32();
-                        int t = reader.ReadInt32();
-                        int r = reader.ReadInt32();
+                        width = reader.ReadInt32();
+                        height = reader.ReadInt32();
                         int internalFormat = reader.ReadInt32();
                         int pixelFormat = reader.ReadInt32();
                         int dataType = reader.ReadInt32();
@@ -48,10 +82,10 @@ namespace osgEx
                         int mode = reader.ReadInt32();
 
                         uint size = reader.ReadUInt32();
-                        byte[] imageData = reader.ReadBytes((int)size);
+                        rawTextureData = reader.ReadBytes((int)size);
                         if (size > 0)
                         {
-                            TextureFormat format = TextureFormat.RGB24;  // TODO: other formats/data size
+                            format = TextureFormat.RGB24;  // TODO: other formats/data size
                             if (dataType == 0x1401)
                             {
                                 if (pixelFormat == 0x1907) format = TextureFormat.RGB24;  // GL_RGB
@@ -65,10 +99,6 @@ namespace osgEx
                             }
                             else
                                 Debug.LogWarning("Unsupported texture data type " + dataType);
-
-                            tex2D = new Texture2D(s, t, format, false);
-                            tex2D.LoadRawTextureData(imageData);
-                            tex2D.Apply();
                         }
 
                         uint numLevels = reader.ReadUInt32();
@@ -84,21 +114,14 @@ namespace osgEx
                         uint size = reader.ReadUInt32();
                         if (size > 0)
                         {
-                            byte[] fileData = reader.ReadBytes((int)size);
-
-                            tex2D = new Texture2D(2, 2);
-                            tex2D.LoadImage(fileData);
-                            //File.WriteAllBytes("test.jpg", fileData);
+                            imageData = reader.ReadBytes((int)size);
                         }
                     }
                     break;
                 case 2:  // IMAGE_EXTERNAL
                     if (File.Exists(fileName))
                     {
-                        byte[] fileData = File.ReadAllBytes(fileName);
 
-                        tex2D = new Texture2D(2, 2);
-                        tex2D.LoadImage(fileData);
                     }
                     break;
                 default: break;
@@ -111,8 +134,29 @@ namespace osgEx
             {
                 var userData = LoadObject(reader, owner);
             }
-            owner._sharedTextures[id] = tex2D;
-            return tex2D;
         }
+
+        void generate()
+        {
+            switch (decision)
+            {
+                case 0:
+                    m_texture2D = new Texture2D(width, height, format, false);
+                    m_texture2D.LoadRawTextureData(rawTextureData);
+                    m_texture2D.Apply(false, true);
+                    break;
+                case 1:
+                    m_texture2D = new Texture2D(2, 2);
+                    m_texture2D.LoadImage(imageData, true);
+                    break;
+                case 2:
+                    imageData = File.ReadAllBytes(fileName);
+                    m_texture2D.LoadImage(imageData, true);
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 }

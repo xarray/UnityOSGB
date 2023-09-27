@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Security.Policy;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -9,52 +9,7 @@ namespace osgEx
 
     public class osg_Reader
     {
-        public class osg_AsyncOperation : CustomYieldInstruction
-        {
-            public override bool keepWaiting => !isDone;
-            public bool isDone { get; private set; }
-            //完成时返回的读取器
-            public osg_Reader osgReader;
-            public osg_AsyncOperation(string url)
-            {
-                //url=UnityWebRequest.EscapeURL(url);
-                UnityWebRequest webRequest = UnityWebRequest.Get(url);
-                webRequest.SendWebRequest().completed += (op) =>
-                {
-                    switch (webRequest.result)
-                    {
-                        case UnityWebRequest.Result.Success:
-                            byte[] binary = webRequest.downloadHandler.data;
-                            using (MemoryStream binartStream = new MemoryStream(binary))
-                            {
-                                using (BinaryReader binaryReader = new BinaryReader(binartStream))
-                                {
-                                    try
-                                    {
-                                        osgReader = osg_Reader.LoadFromBinaryReader(binaryReader, url);
-                                        osgReader.filePath = url;
-                                    }
-                                    catch (System.Exception ex)
-                                    {
-                                        Debug.Log(url);
-                                        throw ex;
-                                    }
-                                }
-                            }
-                            break;
-                        case UnityWebRequest.Result.InProgress:
-                        case UnityWebRequest.Result.ConnectionError:
-                        case UnityWebRequest.Result.ProtocolError:
-                        case UnityWebRequest.Result.DataProcessingError:
-                            Debug.Log(webRequest.result.ToString() + "\n" + url);
-                            break;
-                        default:
-                            break;
-                    }
-                    isDone = true;
-                };
-            }
-        }
+
         private osg_Reader() { }
 
         const int OSG_HEADER_L = 0x6C910EA1;
@@ -69,9 +24,9 @@ namespace osgEx
         public osg_Node root;
 
         public Dictionary<uint, osg_Object> _sharedObjects = new Dictionary<uint, osg_Object>();
-        public Dictionary<uint, Texture2D> _sharedTextures = new Dictionary<uint, Texture2D>();
 
-        static osg_Reader LoadFromBinaryReader(BinaryReader reader, string filePath)
+
+        public static osg_Reader LoadFromBinaryReader(BinaryReader reader, string filePath)
         {
             var osg_reader = new osg_Reader();
             osg_reader.filePath = filePath;
@@ -126,12 +81,12 @@ namespace osgEx
                 {
                     return LoadFromStream(binartStream, filePath);
                 }
-                catch  
+                catch
                 {
                     Debug.Log(filePath);
                     throw;
                 }
-              
+
             }
         }
         public static osg_Reader LoadFromStream(Stream stream, string filePath)

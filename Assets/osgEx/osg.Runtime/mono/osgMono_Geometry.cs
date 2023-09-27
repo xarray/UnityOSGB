@@ -18,11 +18,21 @@ namespace osgEx
         void Generate()
         {
             meshRenderer.material = osgManager.Instance.materialData.Material;
+            if (meshRenderer.material != null)
+            {
+                var m_materialPropertyBlock = new MaterialPropertyBlock();
+                var texture = (osgGeometry.stateSet?.textures?[0] as osg_Texture2D).texture2D;
+                if (!string.IsNullOrWhiteSpace(osgManager.Instance.materialData.MainTexProperty))
+                {
+                    m_materialPropertyBlock.SetTexture(osgManager.Instance.materialData.MainTexProperty, texture);
+                }
+                var emission = osgGeometry.stateSet?.materials?[0].emission;
+                var diffuse = osgGeometry.stateSet?.materials?[0].diffuse;
+                var ambient = osgGeometry.stateSet?.materials?[0].ambient;
+                var specular = osgGeometry.stateSet?.materials?[0].specular;
+                meshRenderer.SetPropertyBlock(m_materialPropertyBlock);
+            }
 
-            var m_materialPropertyBlock = new MaterialPropertyBlock();
-            var texture = (osgGeometry.stateSet?.textures?[0] as osg_Texture2D).texture2D;
-            m_materialPropertyBlock.SetTexture(osgManager.Instance.materialData.MainTexProperty, texture);
-            meshRenderer.SetPropertyBlock(m_materialPropertyBlock);
 
             currentMesh = new Mesh();
             currentMesh.vertices = osgGeometry.vertexs;

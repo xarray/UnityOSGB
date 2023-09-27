@@ -107,6 +107,7 @@
     <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_UserDataContainer.cs" />
     <Compile Include="Assets\osgEx\osg.Runtime\mono\osgMono_PagedLOD.cs" />
     <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_Geometry.cs" />
+    <Compile Include="Assets\osgEx\osg.Runtime\osg\osg_AsyncOperation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\osgEx\osg.Runtime\osgEx.Runtime.asmdef" />

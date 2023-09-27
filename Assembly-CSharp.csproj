@@ -714,13 +714,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="osgEx.Editor.csproj">
-      <Project>{BC4157E2-C8A6-0327-C4EE-3D09B0023E32}</Project>
-      <Name>osgEx.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="osgEx.Runtime.csproj">
       <Project>{9C0B80BE-8EEF-283E-0B59-E1BB6F7D1CB3}</Project>
       <Name>osgEx.Runtime</Name>
+    </ProjectReference>
+    <ProjectReference Include="osgEx.Editor.csproj">
+      <Project>{BC4157E2-C8A6-0327-C4EE-3D09B0023E32}</Project>
+      <Name>osgEx.Editor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

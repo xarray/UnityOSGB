@@ -4,7 +4,7 @@ namespace osgEx
 {
     [CreateAssetMenu(fileName = "default", menuName = "osg_MaterialSO")]
     public class osg_MaterialData : ScriptableObject
-    {
+    { 
         [SerializeField]
         private Material m_material;
         [SerializeField]
