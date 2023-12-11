@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System.IO; 
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -7,15 +7,16 @@ namespace osgEx
 {
     public class osg_AsyncOperation : CustomYieldInstruction
     {
-        public override bool keepWaiting => !isDone;
-        public bool isDone { get; private set; }
+        private bool m_keepWaiting;
+        public override bool keepWaiting => !m_keepWaiting;
         //完成时返回的读取器
-        public osg_Reader osgReader;
+        public osg_Reader osgReader { get; private set; }
         private string url;
+        private UnityWebRequest webRequest;
         public osg_AsyncOperation(string url)
         {
             this.url = url;
-            UnityWebRequest webRequest = UnityWebRequest.Get(url);
+            webRequest = UnityWebRequest.Get(url);
             webRequest.SendWebRequest().completed += onWebRequestCompleted;
         }
         void onWebRequestCompleted(AsyncOperation asyncOperation)
@@ -26,19 +27,18 @@ namespace osgEx
             {
                 case UnityWebRequest.Result.Success:
 #if UNITY_EDITOR || !UNITY_WEBGL
-                    Task.Run(() => LoadFromBinary(binary)).GetAwaiter().OnCompleted(() => { isDone = true; });
+                    Task.Run(() => LoadFromBinary(binary)).GetAwaiter().OnCompleted(() => { m_keepWaiting = true; });
 #else
                     LoadFromBinary(binary);
-                    isDone = true;
-#endif
-
+                    m_keepWaiting = true;
+#endif 
                     break;
                 case UnityWebRequest.Result.InProgress:
                 case UnityWebRequest.Result.ConnectionError:
                 case UnityWebRequest.Result.ProtocolError:
                 case UnityWebRequest.Result.DataProcessingError:
                     Debug.Log(requestAsyncOperation.webRequest.result.ToString() + "\n" + url);
-                    isDone = true;
+                    m_keepWaiting = true;
                     break;
                 default:
                     break;
@@ -64,5 +64,6 @@ namespace osgEx
                 }
             }
         }
+
     }
 }

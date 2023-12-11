@@ -3,12 +3,10 @@ using UnityEngine;
 
 namespace osgEx
 {
-    public class osgMono_Geode : osgMono_Base
+    public class osgMono_Geode : osgMono_Base<osg_Geode>
     {
-        private osg_Geode m_osgGeode;
-        public osg_Geode osgGeode { get=> m_osgGeode; set { m_osgGeode = value; Generate(); } }
         public osgMono_Geometry[] monoGeometrys;
-        void Generate()
+        public override void Generate(osg_Geode osgGeode)
         {
             if (osgGeode.geometrys == null)
             {
@@ -25,8 +23,8 @@ namespace osgEx
                 geometryGameObject.transform.localRotation = Quaternion.identity;
                 geometryGameObject.transform.localScale = Vector3.one;
                 monoGeometrys[i] = geometryGameObject.AddComponent<osgMono_Geometry>();
-                monoGeometrys[i].osgGeometry = geometry;
+                monoGeometrys[i].Generate(geometry);
             }
-        } 
+        }
     }
 }

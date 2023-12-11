@@ -1,12 +1,8 @@
-using osgEx;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-using __Editor = UnityEditor.Editor;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine.Rendering;
+using __Editor = UnityEditor.Editor;
 
 namespace osgEx.Editor
 {

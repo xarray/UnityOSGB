@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 namespace osgEx
 {
-    public class osgManager : MonoSingleton<osgManager>
+    public sealed class osgManager : MonoSingleton<osgManager>
     {
         private int frameCount;
         private bool needUpdateCalculateFrustumPlanes;
@@ -22,9 +23,6 @@ namespace osgEx
                 return m_calculateFrustumPlanes;
             }
         }
-        /// <summary>
-        /// 网格使用的材质
-        /// </summary>
         [SerializeField]
         private osg_MaterialData m_materialData;
         public osg_MaterialData materialData
@@ -38,52 +36,48 @@ namespace osgEx
                 return m_materialData;
             }
         }
-        /// <summary>
-        /// 是否创建碰撞器
-        /// </summary>
+        /// 摄像机不运动了多久
+        private float m_cameraStopTime;
+        /// 卸载计时 每60秒卸载一次
+        private float m_unloadTime;
+        /// <summary> 是否创建碰撞器 </summary> 
         public bool colliderEnabled;
-        private void OnCameraMove()
-        {
-            m_cameraStopTime = 0;
-            needUpdateCalculateFrustumPlanes = true;
-        }
+        /// <summary> 更新间隔时间 </summary> 
+        public float updateIntervalTime = 1;
+        /// <summary> 计算LOD的参考比率 </summary> 
+        public float rangeValueRatio = 1;
+        public bool needUpdatePaged { get => m_cameraStopTime > updateIntervalTime; }
         protected override void __Awake()
         {
             base.__Awake();
             m_calculateFrustumPlanes = new Plane[6];
+            Camera.main.GetOrAddComponent<TransformEx>().onChanged += onCameraMove;
         }
-
-        private void Start()
-        {
-            Camera.main.GetOrAddComponent<TransformEx>().onChanged += OnCameraMove;
-        }
-
-
         protected override void __OnDestroy()
         {
             if (Camera.main != null)
             {
-                Camera.main.GetOrAddComponent<TransformEx>().onChanged -= OnCameraMove;
+                Camera.main.GetOrAddComponent<TransformEx>().onChanged -= onCameraMove;
             }
             base.__OnDestroy();
         }
-        private float m_cameraStopTime;
-    
-        public float updateIntervalTime = 1;
-        public bool CanUpdatePaged { get => m_cameraStopTime > updateIntervalTime; }
-        private float m_unloadTime;
 
         private void Update()
         {
             m_cameraStopTime += Time.deltaTime;
             m_unloadTime += Time.deltaTime;
-            if (m_unloadTime > 60)
+            if (m_unloadTime > 120)
             {
+                GC.Collect();
                 Resources.UnloadUnusedAssets();
                 m_unloadTime = 0;
             }
         }
-
+        private void onCameraMove()
+        {
+            m_cameraStopTime = 0;
+            needUpdateCalculateFrustumPlanes = true;
+        }
         public GameObject LoadOSGB(string rootPath, IEnumerable<string> filePath)
         {
             GameObject parent = new GameObject(rootPath);

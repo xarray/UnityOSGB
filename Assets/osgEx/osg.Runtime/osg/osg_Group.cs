@@ -4,7 +4,7 @@ namespace osgEx
 {
     public class osg_Group : osg_Node
     {
-        public osg_PagedLOD[] children;
+        public osg_Node[] children;
         protected override void read(BinaryReader reader, osg_Reader owner)
         {
             base.read(reader, owner);
@@ -14,10 +14,10 @@ namespace osgEx
             {
                 uint numChildren = reader.ReadUInt32();
                 long blockSize = ReadBracket(reader, owner);
-                children = new osg_PagedLOD[numChildren];
+                children = new osg_Node[numChildren];
                 for (uint i = 0; i < numChildren; ++i)
                 {
-                    children[i] = LoadObject(reader, owner) as osg_PagedLOD;
+                    children[i] = LoadObject(reader, owner) as osg_Node;
                 }
             }
         }

@@ -5,13 +5,6 @@ namespace osgEx
 {
     public class osg_Texture2D : osg_Texture
     {
-        ~osg_Texture2D()
-        {
-            if (m_texture2D != null)
-            {
-                Object.Destroy(m_texture2D);
-            }
-        }
         private int width;
         private int height;
         private string fileName;
@@ -21,18 +14,6 @@ namespace osgEx
         private TextureFormat format;
         private int decision;
 
-        private Texture2D m_texture2D;
-        public Texture2D texture2D
-        {
-            get
-            {
-                if (m_texture2D == null)
-                {
-                    generate();
-                }
-                return m_texture2D;
-            }
-        }
         protected override void read(BinaryReader reader, osg_Reader owner)
         {
             base.read(reader, owner);
@@ -136,8 +117,9 @@ namespace osgEx
             }
         }
 
-        void generate()
-        {
+        public Texture2D Generate()
+        { 
+            Texture2D m_texture2D = null;
             switch (decision)
             {
                 case 0:
@@ -156,6 +138,7 @@ namespace osgEx
                 default:
                     break;
             }
+            return m_texture2D;
         }
 
     }

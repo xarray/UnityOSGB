@@ -7,37 +7,46 @@ namespace osgEx
     /// <summary>
     /// OSGB 自带LOD信息 处理
     /// </summary>
-    public class osgMono_PagedLOD : osgMono_Base
+    public class osgMono_PagedLOD : osgMono_Base<osg_PagedLOD>
     {
-        private osg_PagedLOD m_osgPagedLOD;
-        public osg_PagedLOD osgPagedLOD { get => m_osgPagedLOD; set { m_osgPagedLOD = value; Generate(); } }
         /// <summary> LOD 范围模式 距离/视图范围 </summary>
-        public RangeMode rangeMode { get => osgPagedLOD.rangeMode; }
+        private RangeMode rangeMode;
         /// <summary> 本文件路径 </summary>
-        public string filePath { get => osgPagedLOD.owner.filePath; }
+        private string filePath;
         /// <summary> 本文件名 </summary>
-        public string fileName { get => Path.GetFileName(osgPagedLOD.owner.filePath); }
+        private string fileName;
         /// <summary> 本文件所在目录 </summary>
-        public string fileDirectory { get => filePath.Remove(filePath.Length - fileName.Length); }
+        private string fileDirectory;
         /// <summary> 子节点的相对路径 </summary>
-        public string databasePath { get => osgPagedLOD.databasePath; }
+        private string databasePath;
         /// <summary> 子节点加载时的路径 </summary>
-        public string fullPathPrefix { get => fileDirectory + databasePath; }
+        private string fullPathPrefix;
         /// <summary> 包围盒大小 </summary>
-        public BoundingSphere bounds { get => osgPagedLOD.userCenter.Value; }
+        private BoundingSphere bounds;
         /// <summary> 子节点的文件名 </summary>
-        public string[] rangeData { get => osgPagedLOD.rangeData; }
+        private string[] rangeData;
         /// <summary> 子节点的LOD区间范围 </summary>
-        public Vector2[] ranges { get => osgPagedLOD.ranges; }
+        private Vector2[] ranges;
         /// <summary> 子节点 </summary>
-        public osgMono_LoadHelper[] childrens;
+        private osgMono_LoadHelper[] childrens;
         /// <summary> 自身网格相关 </summary>
-        public osgMono_Geode[] monoGeodes;
+        private osgMono_Geode[] monoGeodes;
         private bool updated;
-        private void Generate()
+        public override void Generate(osg_PagedLOD osgPagedLOD)
         {
+            rangeMode = osgPagedLOD.rangeMode;
+            filePath = osgPagedLOD.owner.filePath;
+            fileName = Path.GetFileName(filePath);
+            fileDirectory = filePath.Remove(filePath.Length - fileName.Length);
+            databasePath = osgPagedLOD.databasePath;
+            fullPathPrefix = fileDirectory + databasePath;
+            bounds = osgPagedLOD.userCenter.Value;
+            rangeData = osgPagedLOD.rangeData;
+            ranges = osgPagedLOD.ranges;
             monoGeodes = new osgMono_Geode[osgPagedLOD.children.Length];
             childrens = new osgMono_LoadHelper[rangeData.Length];
+
+
             for (int i = 0; i < osgPagedLOD.children.Length; i++)
             {
                 GameObject geodeGameObject = new GameObject();
@@ -47,7 +56,7 @@ namespace osgEx
                 geodeGameObject.transform.localRotation = Quaternion.identity;
                 geodeGameObject.transform.localScale = Vector3.one;
                 var monoGeode = geodeGameObject.AddComponent<osgMono_Geode>();
-                monoGeode.osgGeode = osgPagedLOD.children[i];
+                monoGeode.Generate(osgPagedLOD.children[i]);
                 monoGeodes[i] = monoGeode;
             }
             for (int i = 0; i < rangeData.Length; i++)
@@ -65,7 +74,7 @@ namespace osgEx
         }
         private void Update()
         {
-            if (!osgManager.Instance.CanUpdatePaged)
+            if (!osgManager.Instance.needUpdatePaged)
             {
                 updated = false;
                 return;
@@ -102,6 +111,7 @@ namespace osgEx
                     else
                         rangeValue = -1.0f;
                 }
+                rangeValue = rangeValue * osgManager.Instance.rangeValueRatio;
                 for (int i = 0; i < ranges.Length; ++i)
                 {
                     string fileName = rangeData[i];
